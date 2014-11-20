@@ -68,13 +68,12 @@
 							}
 							continue
 						}
-
 					}
 
 					oldValue.apply(instance, newValue)
 
 				} else {
-					oldValue.call(instance, newValue)
+					instance[prop](newValue)
 				}
 
 			} else {
@@ -108,7 +107,7 @@
 
 		}
 
-		return function(options) {
+		return function facade(options) {
 			_instance = instance
 			if (isObj(options)) {
 				invoke(options)

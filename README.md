@@ -11,8 +11,36 @@ Agent
 
 代理函数接受一个对象`options`作为参数，针对`options`对象的每一个属性`prop`， 代理函数的处理规则如下：
 
->* 1、如果 instance[prop] 不是一个函数，则有 instance[prop] = options[prop] 
->* 2、如果 instance[prop] 是一个函数，则有 instance[prop].apply(instance, isArray(options[prop]) ? options[prop] : [options[prop]]) 
+1、如果`instance[prop]`不是一个函数，则有：
+
+```javascript
+instance[prop] =options[prop]
+```
+
+2、如果`instance[prop]`是一个函数，则分三种情形：
+
+2.1、`options[prop]`为非数组：
+
+```javascript
+instance[prop](options[prop])
+```
+2.2、`options[prop]`为数组：
+
+2.2.1、数组的长度大于等于2，且数据类型相同，则视为多次调用
+
+```javascript
+for (var i = 0, len = options[prop].length; i < len; i += 1) {
+    instance[prop][isArray(options[prop][i]) ? 'apply' : 'call'](options[prop][i])
+}
+````
+
+2.2.2、数组长度小于2，或者大于2却不是相同数据类型，则为普通调用
+
+```javascript
+instance[prop].apply(instance, options[prop])
+```
+
+注意：也可以将多个`options`打包成数组，传入代理函数，将在内部遍历调用
 
 了解`javascript`中的原型继承的人都知道，`instance[prop]`可以是原型对象中的方法
 
@@ -26,7 +54,7 @@ Agent
 `test.html`中包含了`Agnet`的大多数用法，如下：
 
 ```javascript
- (function() {
+(function() {
 
 
         //test jQuery
@@ -59,6 +87,14 @@ Agent
         }
 
         $item(items_settings)
+
+        $item([
+            {append: '多个options形式<br>'},
+            {append: '多个options形式<br>'},
+            {append: '多个options形式<br>'},
+            {append: '多个options形式<br>'},
+            {append: '多个options形式<br>'},
+            ])
 
 
         //test seajs
