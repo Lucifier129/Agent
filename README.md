@@ -44,12 +44,16 @@ Agent
 
         var items_settings = {
 
-            text: '测试代理jQuery实例，调用text、css以及animate方法',
+            prepend: '测试代理jQuery实例，调用text、css以及animate方法',
+            //数组形式，长度大于1， 为同一数据类型，即视为多次调用
+            append: ['<div>多次调用</div>', '<div>多次调用</div>', '<div>多次调用</div>', '<div>多次调用</div>'],
 
-            css: ['color', '#f00'],
+            css: {
+                'color': '#f00'
+            },
 
             animate: {
-                'line-height': '300px'
+                'line-height': '30px'
             }
 
         }
@@ -75,7 +79,7 @@ Agent
 
                 setTimeout(function() {
                     $item({
-                        text: data
+                        append: data
                     })
                 }, 1000)
 
@@ -116,7 +120,7 @@ Agent
 
             say: '我不会被say，因为下面有个say覆盖了我',
 
-            sing: '月亮代表我的心',
+            sing: ['月亮代表我的心', '歌曲1', '歌曲2', '歌曲3', '歌曲4', '歌曲5'],
 
             grow: 25,
 
