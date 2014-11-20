@@ -157,6 +157,26 @@
         //直接看不到100行的源码，是了解 agent 的最佳途径
 
 
+        //test dom对象
+
+        var btn = $$(document.getElementById('btn'))
+
+        btn({
+
+            onclick: function() {
+                console.log('测试原生DOM对象')
+            },
+
+            style: {
+                background: '#f00',
+                width: '200px'
+            },
+
+            title: '一个普通title'
+
+        })
+
+
     }())
 
     </script>

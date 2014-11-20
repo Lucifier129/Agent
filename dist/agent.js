@@ -30,7 +30,7 @@
 
 		if (constructor === undefined || !isFn(constructor)) {
 
-			instance = isObj(constructor) ? constructor : {}
+			instance = typeof constructor === 'object' ? constructor : {}
 
 		} else {
 
@@ -62,7 +62,17 @@
 
 				} else {
 
-					instance[prop] = newValue
+					if (typeof newValue === 'object' && typeof oldValue === 'object') {
+
+						for (var key in newValue) {
+							oldValue[key] = newValue[key]
+						}
+
+					} else {
+
+						instance[prop] = newValue
+
+					}
 
 				}
 			}
