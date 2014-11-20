@@ -14,7 +14,7 @@ Agent
 1、如果`instance[prop]`不是一个函数，则有：
 
 ```javascript
-instance[prop] =options[prop]
+instance[prop] = options[prop]
 ```
 
 2、如果`instance[prop]`是一个函数，则分三种情形：
@@ -30,7 +30,7 @@ instance[prop](options[prop])
 
 ```javascript
 for (var i = 0, len = options[prop].length; i < len; i += 1) {
-    instance[prop][isArray(options[prop][i]) ? 'apply' : 'call'](options[prop][i])
+    instance[prop][isArray(options[prop][i]) ? 'apply' : 'call'](instance, options[prop][i])
 }
 ````
 
