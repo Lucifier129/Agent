@@ -9,7 +9,7 @@ Agent
 
 它根据传入的构造函数与初始化参数，得到其实例`instance`，并返回一个代理函数。
 
-该接受一个对象`options`作为参数，针对`options`对象的每一个属性`prop`， 代理函数的处理规则如下：
+代理函数接受一个对象`options`作为参数，针对`options`对象的每一个属性`prop`， 代理函数的处理规则如下：
 
 >* 1、如果 instance[prop] 不是一个函数，则有 instance[prop] = options[prop] 
 >* 2、如果 instance[prop] 是一个函数，则有 instance[prop].apply(instance, isArray(options[prop]) ? options[prop] : [options[prop]]) 
