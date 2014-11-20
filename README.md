@@ -9,8 +9,8 @@ Agent
 
 该接受一个对象`options`作为参数，针对`options`对象的每一个属性`prop`， 代理函数的处理规则如下：
 
-> 1、如果`instance[prop]`不是一个函数，则有`instance[prop] = options[prop]`
-> 2、如果`instance[prop]`是一个函数，则有`instance[prop].apply(instance, isArray(options[prop]) ? options[prop] : [options[prop]])`
+>* 1、如果`instance[prop]`不是一个函数，则有`instance[prop] = options[prop]`
+>* 2、如果`instance[prop]`是一个函数，则有`instance[prop].apply(instance, isArray(options[prop]) ? options[prop] : [options[prop]])`
 
 了解`javascript`中的原型继承的人都知道，`instance[prop]`可以是原型对象中的方法
 
