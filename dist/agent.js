@@ -12,13 +12,10 @@
 	}
 
 	var objProto = Object.prototype
-	var arrProto = Array.prototype
-
 	var toStr = calling(objProto.toString)
 	var hasOwn = calling(objProto.hasOwnProperty)
+	var slice = calling(Array.prototype.slice)
 
-	var slice = calling(arrProto.slice)
-	var push = calling(arrProto.push)
 
 	function isType(type) {
 		return function(obj) {
@@ -30,21 +27,6 @@
 	var isStr = isType('String')
 	var isFn = isType('Function')
 	var isArr = Array.isArray || isType('Array')
-
-	if (!Function.prototype.bind) {
-		Function.prototype.bind = function(context) {
-			var that = this
-			function Facade() {
-				if (this instanceof Facade) {
-					that.apply(this, arguments)
-				} else {
-					return that.apply(context, arguments)
-				}
-			}
-			Facade.prototype = this.prototype
-			return Facade
-		}
-	}
 
 	if (!String.prototype.trim) {
 		var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g
@@ -273,16 +255,18 @@
 	}
 
 
+
 	function createProxy() {
 		var instance = New.apply(global, arguments)
+		var alias = inherit(createProxy.alias)
 
-		function facade(source) {
+		return extend(function(source) {
 			if (source === undefined) {
 				return instance
 			}
 			var ret
 			mix.instance = instance
-			mix.alias = facade.alias
+			mix.alias = alias
 
 			if (isArr(source)) {
 				ret = []
@@ -296,11 +280,9 @@
 			}
 
 			return ret
-		}
-
-		facade.alias = inherit(createProxy.alias)
-
-		return facade
+		}, {
+			alias: alias
+		})
 	}
 
 	createProxy.alias = inherit({
