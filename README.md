@@ -179,8 +179,6 @@ instance[prop].apply(instance, options[prop])
         //随时可以通过赋值，找回实例，并按照以前的风格使用
         console.log(person())
 
-        //直接看不到100行的源码，是了解 agent 的最佳途径
-
 
         //test dom对象
 
@@ -200,6 +198,32 @@ instance[prop].apply(instance, options[prop])
             title: '一个普通title'
 
         })
+
+        btn.alias.parse('style:stl; alt: name;')
+
+        btn({
+            stl: {
+                color:'#000'
+            },
+            name: 'test'
+        })
+
+
+        //test alias 别名
+        var $btn = $$(jQuery, '#btn')
+
+        $btn.alias.parse($btn().attr('js'))
+
+        $btn({
+            word: 'test alias',
+            sibling: '<p>btn的兄弟元素</p>',
+            style: {
+                color:'green',
+                background: '#eaeaea'
+            }
+        })
+
+        console.dir($btn)
 
 
     }())

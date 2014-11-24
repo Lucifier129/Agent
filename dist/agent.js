@@ -95,6 +95,23 @@
 			}
 
 			return ret
+		},
+
+		parse: function(descri) {
+			if (!isStr(descri)) {
+				return {}
+			}
+			var ret = {}
+			var group = descri.trim().split(';')
+			each(group, function(value) {
+				value = value.trim().split(':')
+				if (value.length < 2) {
+					return
+				}
+				ret[value[1].trim()] = value[0].trim()
+			})
+
+			return ret
 		}
 	}
 
@@ -212,6 +229,7 @@
 
 	function mix(source) {
 		var instance = mix.instance
+		var alias = mix.alias
 		var ret = {}
 		var oldValue
 
@@ -221,8 +239,12 @@
 			var retValue
 
 			if (oldValue === undefined) {
-				instance[prop] = value
-			} else if (isFn(oldValue)) {
+				if (prop in alias) {
+					oldValue = instance[prop = alias[prop]]
+				}
+			}
+
+			if (isFn(oldValue)) {
 
 				if (isSameType(value)) {
 					ret[prop] = []
@@ -241,6 +263,8 @@
 
 			} else if (typeof oldValue === 'object' && typeof value === 'object') {
 				extend(oldValue, value)
+			} else {
+				instance[prop] = value
 			}
 
 		}, global, true)
@@ -252,12 +276,13 @@
 	function createProxy() {
 		var instance = New.apply(global, arguments)
 
-		return function(source) {
+		function facade(source) {
 			if (source === undefined) {
 				return instance
 			}
 			var ret
 			mix.instance = instance
+			mix.alias = facade.alias
 
 			if (isArr(source)) {
 				ret = []
@@ -272,7 +297,37 @@
 
 			return ret
 		}
+
+		facade.alias = inherit(createProxy.alias)
+
+		return facade
 	}
+
+	createProxy.alias = inherit({
+		extend: function(source) {
+			return extend(this, source)
+		},
+
+		each: function(fn) {
+			return each(this, fn)
+		},
+
+		keys: function() {
+			return _.keys(this)
+		},
+
+		values: function() {
+			return _.values(this)
+		},
+
+		invert: function() {
+			return _.invert(this)
+		},
+
+		parse: function(descri) {
+			return this.extend(_.parse(descri))
+		}
+	})
 
 
 	if (isFn(global.define)) {
