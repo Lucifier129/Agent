@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>refresh</title>
+        <meta name="description" content="">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="cleartype" content="on">
+        <style type="text/css">
+        /* css reset*/
+        html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}:focus{outline:1}article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary{display:block}nav ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:"";content:none}a{margin:0;padding:0;border:0;font-size:100%;vertical-align:baseline;background:transparent}ins{background-color:#ff9;color:#000;text-decoration:none}mark{background-color:#ff9;color:#000;font-style:italic;font-weight:700}del{text-decoration:line-through}abbr[title],dfn[title]{border-bottom:1px dotted #000;cursor:help}table{border-collapse:collapse;border-spacing:0}hr{display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0}input,select{vertical-align:middle}
+
+           .clearfloat:before,.clearfloat:after {content:"";display:table;}
+            .clearfloat:after { clear:both; }
+            /* For IE 6/7 (trigger hasLayout) */
+            .clearfloat { *zoom:1; }
+            /* center class */
+            .c-wrap { display: table; *writing-mode: tb-rl; }
+            .c-inner { display: table-cell; vertical-align: middle; *width:100%; *margin:auto 0; *writing-mode:lr-tb;}
+
+            /* main */
+            body { background: #fafafa;}
+            #container { position:relative; width: 1000px; height: 500px; margin:120px auto 0 auto; border:1px solid #eaeaea; box-shadow:0 0 3px #999; background: #fff;}
+            #ball { position:absolute; top:0; left:0; width: 20px; height: 20px; background:#6699ff; border-radius: 50%}
+        </style>
+
+    </head>
+    <body>
+        <div id="container" js="classList.add:className;setAttribute-title:title;">
+            <h1 js="innerHTML:header"></h1>
+            <ul>
+                <li js="addEventListener-click:clickEventHandler;innerHTML:clickEventHandler;"></li>
+                <li js="textContent:describe.0;addEventListener-mouseover:clickEventHandler;title:clickEventHandler"></li>
+                <li js="style:style;textContent:name.first;title:name.last"></li>
+                <li js="insertAdjacentHTML-afterBegin:child;title:setTitle"></li>
+            </ul>
+        </div>
+
+        <div id="config_test">
+            <h1 id="config_head"></h1>
+            <ul>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+            </ul>
+        </div>
+
+        <script type="text/javascript" src="refresh.js"></script>
+        <script type="text/javascript">
+        (function() {
+            var data = {
+                className: 'hehe',
+                title: '显示title',
+                clickEventHandler: function() {
+                    console.log('点击事件')
+                },
+                setTitle: 'asdfasdf',
+                describe: '文本描述，测试赋值',
+                style: {
+                    background:'#f00',
+                    color: '#fff',
+                    font: '14px Simsun'
+                },
+                name: {
+                    first: 'Jade',
+                    last: 'Gu'
+                },
+                header: '头部',
+                child: '<p>新增段落元素</p>'
+            }
+            document.querySelector('#container').startUpDirectiveAll(data)
+
+            setTimeout(function() {
+                data.header = '头部改变啦'
+                data.style = {
+                    background:'#fff',
+                    color: '#f00',
+                    font: '14px Simsun'
+                }
+                data.name.first = 'GYJ'
+                data.title = 'change title'
+                data.child = '<p>新增段落元素1</p>'
+                data.child = '<p>新增段落元素2</p>'
+                data.child = '<p>新增段落元素3</p>'
+                data.child = '<p>新增段落元素4</p>'
+            }, 1000)
+
+            var config_test = document.querySelector('#config_test')
+            config_test.setDirectiveOption({
+                config: {
+                    '#config_test': {
+                        'style.border': 'border',
+                        'onclick':'changeBorderColor'
+                    },
+                    '#config_head': 'textContent:text;style:headStyle'
+                }
+            })
+
+            var data_test_config = {
+                border: '1px solid #199df2',
+                changeBorderColor: function() {
+                    this.style.borderColor = ['#ff9b31', '#72c05d'].sort(function() {
+                        return Math.random() - 0.5
+                    })[0]
+                },
+                text: 'some text for testing configure Directive',
+                headStyle: {
+                    color: '#333',
+                    font: '16px/30px bold',
+                    borderBottem: '1px solid #999'
+                }
+            }
+
+            config_test.startUpDirectiveAll(data_test_config)
+
+            setTimeout(function() {
+                data_test_config.border = '10px solid #199df2'
+            }, 1000)
+        })()
+        </script>
+    </body>
+</html>
