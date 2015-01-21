@@ -149,48 +149,23 @@
 
 	}
 
-	function isSameType(arr) {
-		if (!isArr(arr)) {
-			return false
-		}
-		var len = arr.length
-		var type
-		var i
-		if (len > 1) {
-			type = toStr(arr[0])
-			for (i = len - 1; i > 0; i--) {
-				if (toStr(arr[i]) !== type) {
-					return false
-				}
-			}
-		}
-		return true
-	}
+	var elemProto = Element.prototype
 
-	var inherit = Object.create || function(proto) {
-		var F = function() {}
-		F.prototype = proto
-		return new F()
-	}
-
-	var randomStr = function(prefix) {
-		return (prefix || '') + Math.random().toString(36).substr(2)
-	}
-
-	var nodeProto = Node.prototype
-
-	nodeProto.directiveOption = {
+	elemProto.directiveOption = {
 		name: 'js'
 	}
 
-	nodeProto.setDirectiveOption = function(option) {
-		extend(true, this.directiveOption, option)
-		if (isObj(option.config)) {
+	elemProto.setDirectiveOption = function(option) {
+		if (!this.hasOwnProperty('directiveOption')) {
+			this.directiveOption = {}
+		}
+		extend(true, this.directiveOption, elemProto.directiveOption, option)
+		if (isObj(this.directiveOption.config)) {
 			var that = this
-			each(option.config, function(directiveObj, selector) {
+			each(this.directiveOption.config, function(directiveObj, selector) {
 				var elems
 
-				if (selector.charAt(0) === '#') {
+				if (/\#/.test(selector)) {
 					elems = document.querySelectorAll(selector)
 				} else {
 					elems = that.querySelectorAll(selector)
@@ -216,20 +191,20 @@
 		return this
 	}
 
-	nodeProto.getDirective = function() {
+	elemProto.getDirective = function() {
 		return this.getAttribute(this.directiveOption.name)
 	}
 
-	nodeProto.setDirective = function(value) {
+	elemProto.setDirective = function(value) {
 		return this.setAttribute(this.directiveOption.name, value)
 	}
 
-	nodeProto.parseDirectiveValue = function(directiveValue) {
+	elemProto.parseDirectiveValue = function(directiveValue) {
 		directiveValue = directiveValue || this.getDirective()
 		return isStr(directiveValue) ? _.parse(directiveValue) : {}
 	}
 
-	nodeProto.getElementsByDirective = function() {
+	elemProto.getElementsByDirective = function() {
 		return this.querySelectorAll('[' + this.directiveOption.name + ']')
 	}
 
@@ -272,7 +247,7 @@
 			prop = key
 			prevObj = obj
 			obj = obj[prop]
-			if (obj === undefined) {
+			if (obj == undefined) {
 				return false
 			}
 		})
@@ -292,7 +267,7 @@
 		return obj
 	}
 
-	nodeProto.startUpDirective = function(data) {
+	elemProto.startUpDirective = function(data) {
 		if (!isObj(data)) {
 			return
 		}
@@ -313,7 +288,7 @@
 		return this
 	}
 
-	nodeProto.startUpDirectiveAll = function(data) {
+	elemProto.startUpDirectiveAll = function(data) {
 		this.startUpDirective(data)
 		var elems = this.getElementsByDirective()
 		each(elems, function(elem) {

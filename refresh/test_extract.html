@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>extract</title>
+        <meta name="description" content="">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="cleartype" content="on">
+        <style type="text/css">
+        /* css reset*/
+        html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}:focus{outline:1}article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary{display:block}nav ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:"";content:none}a{margin:0;padding:0;border:0;font-size:100%;vertical-align:baseline;background:transparent}ins{background-color:#ff9;color:#000;text-decoration:none}mark{background-color:#ff9;color:#000;font-style:italic;font-weight:700}del{text-decoration:line-through}abbr[title],dfn[title]{border-bottom:1px dotted #000;cursor:help}table{border-collapse:collapse;border-spacing:0}hr{display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0}input,select{vertical-align:middle}
+
+           .clearfloat:before,.clearfloat:after {content:"";display:table;}
+            .clearfloat:after { clear:both; }
+            /* For IE 6/7 (trigger hasLayout) */
+            .clearfloat { *zoom:1; }
+            /* center class */
+            .c-wrap { display: table; *writing-mode: tb-rl; }
+            .c-inner { display: table-cell; vertical-align: middle; *width:100%; *margin:auto 0; *writing-mode:lr-tb;}
+
+            /* main */
+            body { background: #fafafa;}
+        </style>
+
+    </head>
+    <body>
+        <div id="container"></div>
+        <script type="text/javascript" src="extract.js"></script>
+        <script type="text/javascript">
+        (function() {
+            var obj = {
+                a: {
+                    b: {
+                        c: {
+                            d: {
+                                e: 'test obj.get',
+                                method: function(msg1, msg2) {
+                                    console.log('test obj.invoke', arguments)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //test obj.get
+            console.log(obj.get('a.b.c.d.e'))
+
+            //test obj.set
+            obj.set('a.b.c.d.f.h.i', 'test obj.set')
+            console.log(obj.get('a.b.c.d.f.h.i'))
+
+            //test obj.invoke
+            obj.invoke('a.b.c.d.method', 'Hello', 'World!')
+
+            //test obj.extend
+            obj.extend({
+                normal: 'target is self',
+                otherProp: [1, 2, 3, 4]
+            }, {
+                normal1: 'target is self1'
+            }, {
+                normal2: 'target is self2'
+            })
+
+            obj.extend('a.b', {
+                chain: 'target is a.b',
+                otherProp: 'some words'
+            })
+
+            obj.extend(true, 'a.b', {
+                c: {
+                    deep: 'test deep',
+                    d: {
+                        deep: 'test deep'
+                    }
+                }
+            })
+
+            console.log(obj)
+
+            window.extend('document.body.firstElementChild.style', {
+                width: '100px',
+                height: '100px',
+                background: '#f00',
+                margin: '0 auto'
+            })
+
+            window.invoke('document.querySelector', '#container').extend('style', {
+                textAlign: 'center',
+                font: '16px/100px Microsoft YaHei',
+                color: '#fff'
+            }).invoke('appendChild', document.createTextNode('some words'))
+
+
+        })()
+        </script>
+    </body>
+</html>
