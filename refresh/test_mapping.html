@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>extract</title>
+        <meta name="description" content="">
+        <meta name="HandheldFriendly" content="True">
+        <meta name="MobileOptimized" content="320">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="cleartype" content="on">
+        <style type="text/css">
+        /* css reset*/
+        html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}:focus{outline:1}article,aside,canvas,details,figcaption,figure,footer,header,hgroup,menu,nav,section,summary{display:block}nav ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:"";content:none}a{margin:0;padding:0;border:0;font-size:100%;vertical-align:baseline;background:transparent}ins{background-color:#ff9;color:#000;text-decoration:none}mark{background-color:#ff9;color:#000;font-style:italic;font-weight:700}del{text-decoration:line-through}abbr[title],dfn[title]{border-bottom:1px dotted #000;cursor:help}table{border-collapse:collapse;border-spacing:0}hr{display:block;height:1px;border:0;border-top:1px solid #ccc;margin:1em 0;padding:0}input,select{vertical-align:middle}
+
+           .clearfloat:before,.clearfloat:after {content:"";display:table;}
+            .clearfloat:after { clear:both; }
+            /* For IE 6/7 (trigger hasLayout) */
+            .clearfloat { *zoom:1; }
+            /* center class */
+            .c-wrap { display: table; *writing-mode: tb-rl; }
+            .c-inner { display: table-cell; vertical-align: middle; *width:100%; *margin:auto 0; *writing-mode:lr-tb;}
+
+            /* main */
+            body { background: #fafafa;}
+        </style>
+
+    </head>
+    <body>
+        <!-- <div id="container" js="style.textAlign:align">
+            <h1 js="textContent:title;title:title"></h1>
+            <p><input id="input" type="text" js="value:name.first;title:name.first;oninput:changefirstname;"></p>
+            <p><input type="text" js="value:name.last;title:name.last;oninput:changelastname"></p>
+            <p>
+                <span js="textContent:name.first;title:name.first"></span>
+                <span js="textContent:name.last;title:name.last"></span>
+            </p>
+        </div> -->
+        <div id="container">
+            <h1 id="title"></h1>
+            <p><input type="text" id="fistname"></p>
+            <p><input type="text" id="lastname"></p>
+            <p>
+                <span id="theFirst"></span>
+                <span id="theLast"></span>
+            </p>
+            <p id="fullname"></p>
+        </div>
+        <script type="text/javascript" src="avatar.js"></script>
+        <script type="text/javascript">
+        (function() {
+
+            document.documentElement.setDirectiveAll({
+                'body': {
+                    'style.background': 'background'
+                },
+                '#container': {
+                    'style.textAlign': 'align'
+                },
+                '#title': {
+                    'textContent': 'title',
+                    'title': 'title'
+                },
+                '#fistname': {
+                    'value': 'name.first',
+                    'title': 'name.first',
+                    'oninput': 'changefirstname'
+                },
+                '#lastname': {
+                    'value': 'name.last',
+                    'title': 'name.last',
+                    'oninput': 'changelastname'
+                },
+                '#theFirst': {
+                    'textContent': 'name.first',
+                    'title': 'name.first'
+                },
+                '#theLast': {
+                    'textContent': 'name.last',
+                    'title': 'name.last'
+                },
+            })
+
+            var data = document.documentElement.mappingAll({
+                title: 'Testing Mapping',
+                name: {
+                    first: 'Jade',
+                    last: 'Gu'
+                },
+                align: 'center',
+                background: '#eaeaea',
+                changefirstname: function() {
+                    data.name.first = this.value
+                },
+                changelastname: function() {
+                    data.name.last = this.value
+                }
+            })
+
+
+            setTimeout(function() {
+                data.title = 'change the title for testing sync.'
+                data.name.first = 'change firstname'
+                data.name.last = 'change lastname'
+            }, 1000)
+
+
+        })()
+        </script>
+    </body>
+</html>

@@ -1,10 +1,9 @@
 /**
- * extract.js
+ * avatar.js
  * @author:Jade Gu
  * @date:2015.01.21
  */
-;
-(function(global, undefined) {
+;(function(global, undefined) {
 	//base
 	function calling(fn) {
 		return function() {
@@ -46,6 +45,13 @@
 		}
 	}
 
+	if (!Object.defineProperty && Object.prototype.__defineSetter__) {
+		Object.defineProperty = function(obj, propName, descriptor) {
+			obj.__defineGetter__(propName, descriptor.get)
+			obj.__defineSetter__(propName, descriptor.set)
+		}
+	}
+
 	var _ = {
 		keys: Object.keys || function(obj) {
 			var keys = []
@@ -70,11 +76,10 @@
 				if (value.length < 2) {
 					return
 				}
-				var aliasName = value[1].trim()
-				var methodName = value[0].trim()
-				var arr = ret[aliasName] = ret[aliasName] || []
-				if (arr.indexOf(methodName) === -1) {
-					arr.push(methodName)
+				var avatarPropChain = value[1].trim()
+				var selfPropChain = value[0].trim()
+				if (avatarPropChain && selfPropChain) {
+					ret[selfPropChain] = avatarPropChain
 				}
 			})
 			return ret
@@ -149,18 +154,21 @@
 
 	}
 
-	function parsePropChain(propChain) {
-		return isArr(propChain) ? propChain : isStr(propChain) ? propChain.trim().split('.') : []
+
+	objProto.separator = '.'
+
+	function parsePropChain(propChain, separator) {
+		return isArr(propChain) ? propChain : isStr(propChain) ? propChain.trim().split(separator || '.') : []
 	}
 
-
-	objProto.get = function(propChain, callback) {
-		var props = parsePropChain(propChain)
+	objProto.chain = function(propChain, callback) {
+		var props = parsePropChain(propChain, this.separator)
 		var result = this
 		var hasCallback = isFn(callback)
+		var count = 0
 		each(props, function(prop) {
 			if (hasCallback) {
-				callback(result, prop)
+				callback(result, prop, props.slice(0, ++count))
 			}
 			result = result[prop]
 			if (result == null) {
@@ -170,17 +178,29 @@
 		return result
 	}
 
-	objProto.getGlobal = function() {
-		return global
+	objProto.scan = function(propChainObj) {
+		var that = this
+		var result
+		if (isStr(propChainObj)) {
+			return that.chain(propChainObj)
+		} else if (isArr(propChainObj)) {
+			result = []
+		} else if (isObj(propChainObj)) {
+			result = {}
+		}
+		each(propChainObj, function(propChain, key) {
+			result[key] = that.chain(propChain)
+		})
+		return result
 	}
 
-	objProto.set = function(propChain, val) {
-		var props = parsePropChain(propChain)
+	objProto.build = function(propChain, val) {
+		var props = parsePropChain(propChain, this.separator)
 		var len = props.length
 		if (len === 1) {
 			this[props[0]] = val
 		} else if (len > 1) {
-			var obj = this.get(props.slice(0, len - 1), function(currentObj, currentProp) {
+			var obj = this.chain(props.slice(0, len - 1), function(currentObj, currentProp) {
 				if (currentObj[currentProp] == null) {
 					currentObj[currentProp] = {}
 				}
@@ -190,16 +210,16 @@
 	}
 
 	objProto.invoke = function(propChain) {
-		var props = parsePropChain(propChain)
+		var props = parsePropChain(propChain, this.separator)
 		var len = props.length
-		var method = this.get(props)
+		var method = this.chain(props)
 		if (!isFn(method)) {
 			return
 		}
 		if (len === 1) {
 			obj = this
 		} else if (len > 1) {
-			obj = this.get(props.slice(0, len - 1))
+			obj = this.chain(props.slice(0, len - 1))
 		}
 		return method.apply(obj, slice(arguments, 1))
 	}
@@ -221,7 +241,7 @@
 				return
 			}
 		} else {
-			var target = this.get(propChain)
+			var target = this.chain(propChain)
 			args.splice(index, 1, target)
 		}
 
@@ -230,8 +250,89 @@
 		return this
 	}
 
-	objProto.mapping = function() {
-		//to do
+	objProto.mapping = function(avatar, descriptor) {
+		if (!isObj(descriptor)) {
+			return
+		}
+		var that = this
+		each(descriptor, function(avatarPropChain, selfPropChain) {
+			var props = parsePropChain(avatarPropChain, avatar.separator)
+			var len = props.length
+			var target = avatar.chain(props.slice(0, len - 1))
+			var propName = props[len - 1]
+			var val = target[propName]
+			var __events__ = target['__events__']
+
+			that.build(selfPropChain, val)
+
+			if (!__events__) {
+				__events__ = target['__events__'] = {}
+			}
+
+			if (!__events__[propName]) {
+				__events__[propName] = []
+				Object.defineProperty(target, propName, {
+					get: function() {
+						return val
+					},
+					set: function(v) {
+						each(__events__[propName], function(callback) {
+							callback(v)
+						})
+						val = v
+					}
+				})
+			}
+
+			__events__[propName].push(function(v) {
+				that.build(selfPropChain, v)
+			})
+		})
+		return avatar
+	}
+
+
+	var elemProto = Element.prototype
+
+	elemProto.directiveName = 'js'
+
+	elemProto.getElementsByDirective = function(directiveName) {
+		return this.querySelectorAll('[' + (directiveName || this.directiveName) + ']') || []
+	}
+
+	elemProto.getDirective = function(directiveName) {
+		return _.parse(this.getAttribute(directiveName || this.directiveName))
+	}
+
+	elemProto.setDirective = function(descriptor, directiveName) {
+		this.setAttribute(directiveName || this.directiveName, descriptor)
+		return this
+	}
+
+	elemProto.mappingAll = function(avatar) {
+		var elems = this.getElementsByDirective()
+		each(elems, function(elem) {
+			elem.mapping(avatar, elem.getDirective())
+		})
+		return avatar
+	}
+
+	elemProto.setDirectiveAll = function(descriptorObj) {
+		var that = this
+		each(descriptorObj, function(descriptor, selector) {
+			var elems = that.querySelectorAll(selector)
+			if (isObj(descriptor)) {
+				var _descriptor = ''
+				each(descriptor, function(avatarPropChain, selfPropChain) {
+					_descriptor += selfPropChain + ':' + avatarPropChain + ';'
+				})
+				descriptor = _descriptor
+			}
+			each(elems.length ? elems : [], function(elem) {
+				elem.setDirective(descriptor)
+			})
+		})
+		return this
 	}
 
 }(this));

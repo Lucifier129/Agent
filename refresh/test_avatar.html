@@ -27,7 +27,7 @@
     </head>
     <body>
         <div id="container"></div>
-        <script type="text/javascript" src="extract.js"></script>
+        <script type="text/javascript" src="avatar.js"></script>
         <script type="text/javascript">
         (function() {
             var obj = {
@@ -35,7 +35,7 @@
                     b: {
                         c: {
                             d: {
-                                e: 'test obj.get',
+                                e: 'test obj.chain',
                                 method: function(msg1, msg2) {
                                     console.log('test obj.invoke', arguments)
                                 }
@@ -45,12 +45,12 @@
                 }
             }
 
-            //test obj.get
-            console.log(obj.get('a.b.c.d.e'))
+            //test obj.chain
+            console.log(obj.chain('a.b.c.d.e'))
 
-            //test obj.set
-            obj.set('a.b.c.d.f.h.i', 'test obj.set')
-            console.log(obj.get('a.b.c.d.f.h.i'))
+            //test obj.build
+            obj.build('a.b.c.d.f.h.i', 'test obj.build')
+            console.log(obj.chain('a.b.c.d.f.h.i'))
 
             //test obj.invoke
             obj.invoke('a.b.c.d.method', 'Hello', 'World!')
@@ -81,18 +81,49 @@
 
             console.log(obj)
 
-            window.extend('document.body.firstElementChild.style', {
+            /*window.extend('document.body.firstElementChild.style', {
                 width: '100px',
                 height: '100px',
                 background: '#f00',
                 margin: '0 auto'
-            })
+            })*/
 
             window.invoke('document.querySelector', '#container').extend('style', {
                 textAlign: 'center',
                 font: '16px/100px Microsoft YaHei',
                 color: '#fff'
             }).invoke('appendChild', document.createTextNode('some words'))
+
+            //test obj.mapping
+            var avatar = document.body.mapping({
+                background: '#f00'
+            }, {
+                'style.background': 'background'
+            })
+
+            setTimeout(function() {
+                avatar.background = '#eaeaea'
+                style_avatar.extend({
+                width: '200px',
+                height: '200px',
+                background: 'green',
+                margin: '0 auto'
+            })
+            }, 1000)
+
+            var container = document.invoke('querySelector', '#container')
+
+            var style_avatar = container.style.mapping({
+                width: '100px',
+                height: '100px',
+                background: '#154215',
+                margin: '0 auto'
+            }, {
+                'background': 'background',
+                'width': 'width',
+                'height': 'height',
+                'margin' : 'margin'
+            })
 
 
         })()
